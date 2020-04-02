@@ -1,10 +1,16 @@
 require('./db');
 
 const express = require('express');
-const path = require('path');
-const bodyParser = require('body-parser');
-
 const app = express();
+const path = require('path');
+
+// body parser setup
+const bodyParser = require('body-parser');
+app.use(bodyParser.urlencoded({ extended: false }));
+
+// view engine setup
+app.set('view engine', 'hbs');
+app.set('views', path.join(__dirname, 'views'));
 
 // enable sessions
 const session = require('express-session');
@@ -15,14 +21,8 @@ const sessionOptions = {
 };
 app.use(session(sessionOptions));
 
-// view engine setup
-app.set('views', path.join(__dirname, 'views'));
-app.set('view engine', 'hbs');
-
-// body parser setup
-app.use(bodyParser.urlencoded({ extended: false }));
-
 // serve static files
 app.use(express.static(path.join(__dirname, 'public')));
 
-app.listen(3000);
+const port = 3000;
+app.listen(port);
