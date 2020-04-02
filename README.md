@@ -102,7 +102,7 @@ An Example Exercise:
 
 ## User Stories or Use Cases
 
-1. as non-registered user, I can register a new account with the site.
+1. as a non-registered user, I can register a new account with the site.
 2. as a user, I can log in to the site.
 3. as a user, I can log my workout.
 4. as a user, I can view my workout history and track my progress over time.
