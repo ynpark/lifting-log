@@ -34,9 +34,9 @@ An Example Exercise:
   user: // a reference to a User object
   name: "Bench Press",
   logs: [
-    { createdAt: "1585765350694", sets: "3", reps: "5", weight: "80"},
-    { createdAt: "1585765372594", sets: "2", reps: "1", weight: "110"},
-    { createdAt: "1585768297257", sets: "5", reps: "5", weight: "85"}
+    { exercise: /*reference to Exercise document*/, createdAt: "1585765350694", sets: "3", reps: "5", weight: "80"},
+    { exercise: /*reference to Exercise document*/, createdAt: "1585765372594", sets: "2", reps: "1", weight: "110"},
+    { exercise: /*reference to Exercise document*/, createdAt: "1585768297257", sets: "5", reps: "5", weight: "85"}
   ],
   oneRepMax: "110", 
   percentile: "36",
