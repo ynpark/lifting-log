@@ -1,0 +1,55 @@
+<h2>ALL EXERCISES</h2>
+  <form method="GET" action="/">
+    <div>Name: <input type="text" name="name"></div>
+    <input type="submit" value="Filter">  
+  </form>
+
+<div class="container">
+  <div class="row">
+    <div class="col-6">
+      Name
+    </div>
+    <div class="col-md-auto">
+      One Rep Max
+    </div>
+    <div class="col-md-auto">
+      Percentile
+    </div>
+    <div class="col-md-auto">
+      Goal
+    </div>
+  </div>
+  {{#each exercises as |e|}}
+    <div class="row">
+      <div class="col col-lg-2">
+        {{e.name}}
+      </div>
+      <div class="col-md-auto">
+        {{e.oneRepMax}}
+      </div>
+      <div class="col col-lg-2">
+        {{e.percentile}}
+      </div>
+      <div class="col col-lg-2">
+        {{e.goal}}
+      </div>
+    </div>
+  {{/each}}
+</div>
+
+<!-- <table>
+  <tr>
+    <th>Name</th>
+    <th>One Rep Max</th> 
+    <th>Percentile</th>
+    <th>Goal</th>
+  </tr>
+  {{#each exercises as |e|}}
+    <tr>
+      <td>{{e.name}}</td>
+      <td>{{e.oneRepMax}}</td>
+      <td>{{e.percentile}}</td>
+      <td>{{e.goal}}</td>
+    </tr>
+  {{/each}}
+</table> -->
