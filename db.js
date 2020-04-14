@@ -19,9 +19,9 @@ const User = new mongoose.Schema({
 // * records the user's one rep max and uses it to calculate their percentile
 // * user can set a goal for the exercise
 const Exercise = new mongoose.Schema({
-  //user: {type: mongoose.Schema.Types.ObjectId, ref:'User'},
+  user: {type: mongoose.Schema.Types.ObjectId, ref:'User'},
   name: {type: String, required: true},
-  //logs: [Log]
+  logs: [Log]
   oneRepMax: {type: Number, default: 0, required: true},
   percentile: {type: Number, default: 100, required: true},
   goal: {type: Number, required: false}
@@ -40,9 +40,9 @@ const Log = new mongoose.Schema({
 });
 
 // TODO: add remainder of setup for slugs, connection, registering models, etc. below
-// mongoose.model('User', User);
+mongoose.model('User', User);
 mongoose.model('Exercise', Exercise);
-// mongoose.model('Log', Log);
+mongoose.model('Log', Log);
 mongoose.connect('mongodb://localhost/lifting-log', { 
   useNewUrlParser: true,
   useUnifiedTopology: true,
