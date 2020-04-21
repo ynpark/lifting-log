@@ -21,7 +21,7 @@ const User = new mongoose.Schema({
 const Exercise = new mongoose.Schema({
   user: {type: mongoose.Schema.Types.ObjectId, ref:'User'},
   name: {type: String, required: true},
-  logs: [Log]
+  //logs: [Log],
   oneRepMax: {type: Number, default: 0, required: true},
   percentile: {type: Number, default: 100, required: true},
   goal: {type: Number, required: false}

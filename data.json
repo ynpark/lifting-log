@@ -1,0 +1,43 @@
+{
+  "exercises":  [
+  {
+    "name": "Bench Press",
+    "icon": "img/bench-press.png"
+  },
+  {
+    "name": "Squat",
+    "icon": "img/squat.png"
+  },
+  {
+    "name": "Deadlift",
+    "icon": "img/deadlift.png"
+  },
+  {
+    "name": "Shoulder Press",
+    "icon": "img/shoulder-press.png"
+  },
+  {
+    "name": "Bent Over Row",
+    "icon": "img/bent-over-row.png"
+  },
+  {
+    "name": "Front Squat",
+    "icon": "img/front-squat.png"
+  },
+  {
+    "name": "Incline Bench Press",
+    "icon": "img/incline-bench-press.png"
+  },
+  {
+    "name": "Decline Bench Press",
+    "icon": "img/decline-bench-press.png"
+  },
+  {
+    "name": "Dumbbell Row",
+    "icon": "img/dumbbell-row.png"
+  },
+  {
+    "name": "Dumbbell Lateral Raise",
+    "icon": "img/dumbbell-lateral-raise.png"
+  }
+]}

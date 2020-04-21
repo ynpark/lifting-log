@@ -22,6 +22,7 @@
     "express-sessions": "^1.0.6",
     "hbs": "^4.1.0",
     "jquery": "^3.5.0",
+    "jsdom": "^16.2.2",
     "mongoose": "^5.9.9",
     "mongoose-url-slugs": "^1.0.2"
   },
