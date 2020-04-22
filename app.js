@@ -51,18 +51,6 @@ app.get('/', (req, res) => {
 });
 
 app.get('/tracker', (req, res) => {
-  // let obj = {};
-  // const name = req.query.name;
-  // const weight = req.query.weight;
-  // const sets = req.query.sets;
-  // const reps = req.query.reps;
-  // obj[name] = name;
-  // obj[weight] = weight;
-  // obj[sets] = sets;
-  // obj[reps] = reps;
-  // Exercise.find(obj, (err, result, count) => {
-  //   res.render('tracker', { myExercises: result });
-  // })
   const exercises = req.session.myExercises || [];
   res.render('tracker', { myExercises: exercises });
 });
@@ -263,8 +251,10 @@ loadData(dataPath, exercises, () => {
   console.log(exercises);
   console.log(`loaded ${exercises.length} images`);
 
-  const port = 3000;
+  let port = process.env.PORT;
+  if (port == null || port == "") {
+    port = 8000;
+  }
   app.listen(port);
-
   console.log(`server started on port ${port}`);
 });
