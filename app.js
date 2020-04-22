@@ -251,10 +251,9 @@ loadData(dataPath, exercises, () => {
   console.log(exercises);
   console.log(`loaded ${exercises.length} images`);
 
-  let port = process.env.PORT;
-  if (port == null || port == "") {
-    port = 8000;
-  }
+  let port = process.env.PORT || 8000;
   app.listen(port);
   console.log(`server started on port ${port}`);
 });
+
+module.exports = { app };

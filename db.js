@@ -1,5 +1,6 @@
 const mongoose = require('mongoose');
 const urlSlugs = require('mongoose-url-slugs')
+require('dotenv').config();
 
 // users
 // * our site requires authentication...
@@ -42,7 +43,7 @@ const Exercise = new mongoose.Schema({
 // mongoose.model('User', User);
 mongoose.model('Exercise', Exercise);
 // mongoose.model('Log', Log);
-mongoose.connect('mongodb://localhost/lifting-log', { 
+mongoose.connect(process.env.MONGODB_URI || 'mongodb://localhost/lifting-log', { 
   useNewUrlParser: true,
   useUnifiedTopology: true,
 });
