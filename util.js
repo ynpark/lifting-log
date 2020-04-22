@@ -1,6 +1,6 @@
 const fs = require('fs');
 
-class Exercise {
+class ExerciseIcon {
   constructor(name, icon) {
     this.name = name;
     this.icon = icon;
@@ -13,7 +13,7 @@ function loadData(filePath, allData, cb) {
       const data = JSON.parse(jsonData);
       console.log(data);
       data.exercises.forEach(exercise => {
-        allData.push(new Exercise(exercise.name, exercise.icon));
+        allData.push(new ExerciseIcon(exercise.name, exercise.icon));
       });
       console.log('all data:', allData);
       cb();
@@ -25,6 +25,6 @@ function loadData(filePath, allData, cb) {
 }
 
 module.exports = {
-  Exercise: Exercise,
+  ExerciseIcon: ExerciseIcon,
   loadData: loadData,
 };
