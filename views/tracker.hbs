@@ -1,7 +1,13 @@
 <div class="search">
   <form method="GET" action="/tracker">
-      From: <input type="date" name="logStart">
-      To: <input type="date" name="logEnd">
+      <div>From: 
+        <input type="date" name="logStart" required pattern="\d{4}-\d{2}-\d{2}" title="yyyy-mm-dd">
+        <span class="validity"></span>
+      </div>
+      <div>To: 
+        <input type="date" name="logEnd" required pattern="\d{4}-\d{2}-\d{2}" title="yyyy-mm-dd">
+        <span class="validity"></span>
+      </div>
       <input type="submit" value="Find">  
   </form>
 </div>
