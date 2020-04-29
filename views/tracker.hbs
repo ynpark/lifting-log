@@ -1,5 +1,14 @@
+<div class="search">
+  <form method="GET" action="/tracker">
+      From: <input type="date" name="logStart">
+      To: <input type="date" name="logEnd">
+      <input type="submit" value="Find">  
+  </form>
+</div>
+
 {{#each myExercises as |myExercise|}}
       <div>
+        <span>{{format myExercise.date}}</span>
         <span>{{myExercise.name}}</span>
         <span>{{myExercise.weight}} lbs</span>
         <span>{{myExercise.sets}} sets</span>

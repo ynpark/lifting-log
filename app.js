@@ -1,5 +1,6 @@
 require('./db');
 const mongoose = require('mongoose');
+const Log = mongoose.model('Log');
 const Exercise = mongoose.model('Exercise');
 
 const express = require('express');
@@ -9,9 +10,18 @@ const path = require('path');
 const { loadData } = require('./util');
 const exercises = [];
 
+// enable sessions 
+const session = require('express-session');
+const sessionOptions = {
+  secret: 'secret for storing session id',
+  resave: false,
+  saveUninitialized: true,
+  cookie: { secure: false }
+};
+app.use(session(sessionOptions));
+
 // serve static files
 app.use(express.static(path.join(__dirname, 'public')));
-app.use(express.static(path.join(__dirname, '/node_modules/bootstrap/dist')));
 
 // body parser setup
 const bodyParser = require('body-parser');
@@ -23,20 +33,14 @@ app.set('view engine', 'hbs');
 app.set('views', path.join(__dirname, 'views'));
 hbs.registerHelper('normalize', function (str) {
   return str.replace(/ /g, '-').toLowerCase();
-})
-
-// enable sessions
-const session = require('express-session');
-const sessionOptions = {
-    secret: 'secret for signing session id',
-    resave: true,
-      saveUninitialized: true
-};
-app.use(session(sessionOptions));
+});
+hbs.registerHelper('format', function (date) {
+  return date.toISOString().split('T')[0];
+});
 
 // middleware to normalize input
-app.use(function(req, res, next) {
-  for (let key in req.query){ 
+app.use(function (req, res, next) {
+  for (const key in req.query){ 
     req.query[key.toLowerCase()] = req.query[key];
   }
   next();
@@ -47,12 +51,29 @@ app.get('/', (req, res) => {
   if(Object.prototype.hasOwnProperty.call(req.query, 'exerciseQuery') && req.query.exerciseQuery) {
     result = exercises.filter(exercise => exercise.name.toLowerCase().includes(req.query.exerciseQuery));
   }
-  res.render('home', { exercises: result });
+
+  let env = 'https://lifting-log.herokuapp.com';
+  if (app.get('env') === 'development') { // if context is local
+    env = 'http://localhost:8000';
+  } 
+
+  res.render('search', { exercises: result, env: env });
 });
 
 app.get('/tracker', (req, res) => {
-  const exercises = req.session.myExercises || [];
-  res.render('tracker', { myExercises: exercises });
+  Log.find({ session : req.session.id }).lean().exec((err, docs) => {
+    const exercises = docs.map(log => log.exercises) || [];
+    const merged = [].concat.apply([], exercises);
+    let result = merged;
+    if (Object.prototype.hasOwnProperty.call(req.query, 'logStart') && req.query.logStart
+      && Object.prototype.hasOwnProperty.call(req.query, 'logEnd') && req.query.logEnd) {
+      result = merged.filter(exercise => 
+        exercise.date.getTime() >= new Date(req.query.logStart + 'T00:00:00Z').getTime() 
+        && exercise.date.getTime() <= new Date(req.query.logEnd + 'T00:00:00Z').getTime());
+    }
+    res.render('tracker', { myExercises: result });
+  });
+
 });
 
 app.get('/log-bench-press', (req, res) => {
@@ -100,14 +121,28 @@ app.post('/log-bench-press', (req, res) => {
     name: 'Bench Press',
     weight: req.body.weight,
     sets: req.body.sets,
-    reps: req.body.reps
-  }).save(function(err, savedExercise, count){
-    if(!req.session.myExercises){
-      req.session.myExercises = [];
-    }
-    req.session.myExercises.push(savedExercise);
-    res.redirect('/tracker');
-  })
+    reps: req.body.reps,
+    date : req.body.date
+  }).save(function(err, savedExercise){
+    const obj = {};
+    obj.date = req.body.date;
+    obj.session = req.session.id;
+    Log.findOne(obj, (err, result) => {
+      if(!result){
+        const exerciseArr = [];
+        exerciseArr.push(savedExercise);
+        new Log({
+          exercises: exerciseArr,
+          date: obj.date,
+          session: obj.session
+        }).save();
+      }else{
+        result.exercises.push(savedExercise);
+        result.save();
+      }
+      res.redirect('/tracker');
+    });
+  });
 });
 
 app.post('/log-squat', (req, res) => {
@@ -115,14 +150,28 @@ app.post('/log-squat', (req, res) => {
     name : 'Squat',
     weight : req.body.weight,
     sets : req.body.sets,
-    reps : req.body.reps
-  }).save(function(err, savedExercise, count){
-    if(!req.session.myExercises){
-      req.session.myExercises = [];
-    }
-    req.session.myExercises.push(savedExercise);
-    res.redirect('/tracker');
-  })
+    reps : req.body.reps,
+    date : req.body.date
+  }).save(function(err, savedExercise){
+    const obj = {};
+    obj.date = req.body.date;
+    obj.session = req.session.id;
+    Log.findOne(obj, (err, result) => {
+      if(!result){
+        const exerciseArr = [];
+        exerciseArr.push(savedExercise);
+        new Log({
+          exercises: exerciseArr,
+          date: obj.date,
+          session: obj.session
+        }).save();
+      }else{
+        result.exercises.push(savedExercise);
+        result.save();
+      }
+      res.redirect('/tracker');
+    });
+  });
 });
 
 app.post('/log-deadlift', (req, res) => {
@@ -130,14 +179,28 @@ app.post('/log-deadlift', (req, res) => {
     name : 'Deadlift',
     weight : req.body.weight,
     sets : req.body.sets,
-    reps : req.body.reps
-  }).save(function(err, savedExercise, count){
-    if(!req.session.myExercises){
-      req.session.myExercises = [];
-    }
-    req.session.myExercises.push(savedExercise);
-    res.redirect('/tracker');
-  })
+    reps : req.body.reps,
+    date : req.body.date
+  }).save(function(err, savedExercise){
+    const obj = {};
+    obj.date = req.body.date;
+    obj.session = req.session.id;
+    Log.findOne(obj, (err, result) => {
+      if(!result){
+        const exerciseArr = [];
+        exerciseArr.push(savedExercise);
+        new Log({
+          exercises: exerciseArr,
+          date: obj.date,
+          session: obj.session
+        }).save();
+      }else{
+        result.exercises.push(savedExercise);
+        result.save();
+      }
+      res.redirect('/tracker');
+    });
+  });
 });
 
 app.post('/log-shoulder-press', (req, res) => {
@@ -145,14 +208,28 @@ app.post('/log-shoulder-press', (req, res) => {
     name : 'Shoulder Press',
     weight : req.body.weight,
     sets : req.body.sets,
-    reps : req.body.reps
-  }).save(function(err, savedExercise, count){
-    if(!req.session.myExercises){
-      req.session.myExercises = [];
-    }
-    req.session.myExercises.push(savedExercise);
-    res.redirect('/tracker');
-  })
+    reps : req.body.reps,
+    date : req.body.date
+  }).save(function(err, savedExercise){
+    const obj = {};
+    obj.date = req.body.date;
+    obj.session = req.session.id;
+    Log.findOne(obj, (err, result) => {
+      if(!result){
+        const exerciseArr = [];
+        exerciseArr.push(savedExercise);
+        new Log({
+          exercises: exerciseArr,
+          date: obj.date,
+          session: obj.session
+        }).save();
+      }else{
+        result.exercises.push(savedExercise);
+        result.save();
+      }
+      res.redirect('/tracker');
+    });
+  });
 });
 
 app.post('/log-bent-over-row', (req, res) => {
@@ -160,14 +237,28 @@ app.post('/log-bent-over-row', (req, res) => {
     name : 'Bent Over Row',
     weight : req.body.weight,
     sets : req.body.sets,
-    reps : req.body.reps
-  }).save(function(err, savedExercise, count){
-    if(!req.session.myExercises){
-      req.session.myExercises = [];
-    }
-    req.session.myExercises.push(savedExercise);
-    res.redirect('/tracker');
-  })
+    reps : req.body.reps,
+    date : req.body.date
+  }).save(function(err, savedExercise){
+    const obj = {};
+    obj.date = req.body.date;
+    obj.session = req.session.id;
+    Log.findOne(obj, (err, result) => {
+      if(!result){
+        const exerciseArr = [];
+        exerciseArr.push(savedExercise);
+        new Log({
+          exercises: exerciseArr,
+          date: obj.date,
+          session: obj.session
+        }).save();
+      }else{
+        result.exercises.push(savedExercise);
+        result.save();
+      }
+      res.redirect('/tracker');
+    });
+  });
 });
 
 app.post('/log-front-squat', (req, res) => {
@@ -175,14 +266,28 @@ app.post('/log-front-squat', (req, res) => {
     name : 'Front Squat',
     weight : req.body.weight,
     sets : req.body.sets,
-    reps : req.body.reps
-  }).save(function(err, savedExercise, count){
-    if(!req.session.myExercises){
-      req.session.myExercises = [];
-    }
-    req.session.myExercises.push(savedExercise);
-    res.redirect('/tracker');
-  })
+    reps : req.body.reps,
+    date : req.body.date
+  }).save(function(err, savedExercise){
+    const obj = {};
+    obj.date = req.body.date;
+    obj.session = req.session.id;
+    Log.findOne(obj, (err, result) => {
+      if(!result){
+        const exerciseArr = [];
+        exerciseArr.push(savedExercise);
+        new Log({
+          exercises: exerciseArr,
+          date: obj.date,
+          session: obj.session
+        }).save();
+      }else{
+        result.exercises.push(savedExercise);
+        result.save();
+      }
+      res.redirect('/tracker');
+    });
+  });
 });
 
 app.post('/log-incline-bench-press', (req, res) => {
@@ -190,14 +295,28 @@ app.post('/log-incline-bench-press', (req, res) => {
     name : 'Incline Bench Press',
     weight : req.body.weight,
     sets : req.body.sets,
-    reps : req.body.reps
-  }).save(function(err, savedExercise, count){
-    if(!req.session.myExercises){
-      req.session.myExercises = [];
-    }
-    req.session.myExercises.push(savedExercise);
-    res.redirect('/tracker');
-  })
+    reps : req.body.reps,
+    date : req.body.date
+  }).save(function(err, savedExercise){
+    const obj = {};
+    obj.date = req.body.date;
+    obj.session = req.session.id;
+    Log.findOne(obj, (err, result) => {
+      if(!result){
+        const exerciseArr = [];
+        exerciseArr.push(savedExercise);
+        new Log({
+          exercises: exerciseArr,
+          date: obj.date,
+          session: obj.session
+        }).save();
+      }else{
+        result.exercises.push(savedExercise);
+        result.save();
+      }
+      res.redirect('/tracker');
+    });
+  });
 });
 
 app.post('/log-decline-bench-press', (req, res) => {
@@ -205,14 +324,28 @@ app.post('/log-decline-bench-press', (req, res) => {
     name : 'Decline Bench Press',
     weight : req.body.weight,
     sets : req.body.sets,
-    reps : req.body.reps
-  }).save(function(err, savedExercise, count){
-    if(!req.session.myExercises){
-      req.session.myExercises = [];
-    }
-    req.session.myExercises.push(savedExercise);
-    res.redirect('/tracker');
-  })
+    reps : req.body.reps,
+    date : req.body.date
+  }).save(function(err, savedExercise){
+    const obj = {};
+    obj.date = req.body.date;
+    obj.session = req.session.id;
+    Log.findOne(obj, (err, result) => {
+      if(!result){
+        const exerciseArr = [];
+        exerciseArr.push(savedExercise);
+        new Log({
+          exercises: exerciseArr,
+          date: obj.date,
+          session: obj.session
+        }).save();
+      }else{
+        result.exercises.push(savedExercise);
+        result.save();
+      }
+      res.redirect('/tracker');
+    });
+  });
 });
 
 app.post('/log-dumbbell-row', (req, res) => {
@@ -220,14 +353,28 @@ app.post('/log-dumbbell-row', (req, res) => {
     name : 'Dumbbell Row',
     weight : req.body.weight,
     sets : req.body.sets,
-    reps : req.body.reps
-  }).save(function(err, savedExercise, count){
-    if(!req.session.myExercises){
-      req.session.myExercises = [];
-    }
-    req.session.myExercises.push(savedExercise);
-    res.redirect('/tracker');
-  })
+    reps : req.body.reps,
+    date : req.body.date
+  }).save(function(err, savedExercise){
+    const obj = {};
+    obj.date = req.body.date;
+    obj.session = req.session.id;
+    Log.findOne(obj, (err, result) => {
+      if(!result){
+        const exerciseArr = [];
+        exerciseArr.push(savedExercise);
+        new Log({
+          exercises: exerciseArr,
+          date: obj.date,
+          session: obj.session
+        }).save();
+      }else{
+        result.exercises.push(savedExercise);
+        result.save();
+      }
+      res.redirect('/tracker');
+    });
+  });
 });
 
 app.post('/log-dumbbell-lateral-raise', (req, res) => {
@@ -235,14 +382,28 @@ app.post('/log-dumbbell-lateral-raise', (req, res) => {
     name : 'Dumbbell Lateral Raise',
     weight : req.body.weight,
     sets : req.body.sets,
-    reps : req.body.reps
-  }).save(function(err, savedExercise, count){
-    if(!req.session.myExercises){
-      req.session.myExercises = [];
-    }
-    req.session.myExercises.push(savedExercise);
-    res.redirect('/tracker');
-  })
+    reps : req.body.reps,
+    date : req.body.date
+  }).save(function(err, savedExercise){
+    const obj = {};
+    obj.date = req.body.date;
+    obj.session = req.session.id;
+    Log.findOne(obj, (err, result) => {
+      if(!result){
+        const exerciseArr = [];
+        exerciseArr.push(savedExercise);
+        new Log({
+          exercises: exerciseArr,
+          date: obj.date,
+          session: obj.session
+        }).save();
+      }else{
+        result.exercises.push(savedExercise);
+        result.save();
+      }
+      res.redirect('/tracker');
+    });
+  });
 });
 
 const dataPath = path.join(__dirname, 'data.json');
@@ -251,7 +412,7 @@ loadData(dataPath, exercises, () => {
   console.log(exercises);
   console.log(`loaded ${exercises.length} images`);
 
-  let port = process.env.PORT || 8000;
+  const port = process.env.PORT || 8000;
   app.listen(port);
   console.log(`server started on port ${port}`);
 });

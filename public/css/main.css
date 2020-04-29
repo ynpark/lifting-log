@@ -87,3 +87,15 @@ textarea[name="imageTags"] {
 input[value="Add Image"] {
     margin-top: 10px;
 }
+
+.validity::after {
+  padding-left: 5px;
+}
+
+input:invalid + .validity::after {
+  content: '✖';
+}
+
+input:valid + .validity::after {
+  content: '✓';
+}

@@ -3,6 +3,10 @@
     <div>Weight (lbs): <input type="text" name="weight"></div>
     <div># Sets: <input type="text" name="sets"></div>
     <div># Reps: <input type="text" name="reps"></div>
+    <div>Date: 
+      <input type="date" name="date" required pattern="\d{4}-\d{2}-\d{2}" title="yyyy-mm-dd">
+      <span class="validity"></span>
+    </div>
     <input type="submit" value="Submit">
   </form>
 </div>

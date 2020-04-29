@@ -7,10 +7,11 @@ module.exports = {
         "es6": true,
         "node": true,
         "mocha": true,
+        "jest": true
     },
     "extends": "eslint:recommended",
     "parserOptions": {
-        "ecmaVersion": 6
+        "ecmaVersion": 2017
     },
     "rules": {
         "semi": [

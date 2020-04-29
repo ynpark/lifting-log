@@ -129,5 +129,18 @@ An Example Exercise:
 ## [Link to Initial Main Project File](app.js) 
 
 
+## Research Topic 1 - Unit Testing with Jest
+![unit testing gif](documentation/jest-unit-test.gif)
+
+
+## Research Topic 2 - Automate Linting with Gulp
+![linting gif](documentation/gulp-eslint.gif)
+
+
 ## Annotations / References Used
-1. Used [Sample Documentation](https://github.com/nyu-csci-ua-0480-008-spring-2017/final-project-example) as reference for README.md, app.js, and db.js
+1. Used [Sample Documentation](https://github.com/nyu-csci-ua-0480-008-spring-2017/final-project-example) as reference for initial set up
+2. Automate Linting with Gulp (tutorial used JSHint, but I used ESLint) - https://scotch.io/tutorials/automate-your-tasks-easily-with-gulp-js 
+3. Unit Testing with Jest - https://medium.com/javascript-in-plain-english/how-i-setup-unit-test-for-mongodb-using-jest-mongoose-103b772ee164
+4. Deploying to Heroku - https://devcenter.heroku.com/articles/getting-started-with-nodejs?singlepage=true, https://devcenter.heroku.com/articles/deploying-nodejs, https://medium.com/make-school/how-to-deploy-your-node-js-mongodb-app-to-the-web-using-heroku-63d4bccf2675
+5. Reused some styling from [HW 5](https://github.com/nyu-csci-ua-0480-008-spring-2020/ynpark-homework05)
+6. Sanitizing Input Data - 

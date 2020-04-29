@@ -1,10 +1,11 @@
+require('../db');
 const mongoose = require('mongoose');
-const ExerciseModel = require('./db');
-const exerciseData = { name: 'Squat', weight: 165, sets: 5, reps: 10 };
+const ExerciseModel = mongoose.model('Exercise');
+const exerciseData = { name: 'Squat', weight: 165, sets: 5, reps: 10, date: new Date('2020-04-01T00:00:00.000Z')};
 
 describe('Exercise Model Test', () => {
     beforeAll(async () => {
-        await mongoose.connect('mongodb://localhost/lifting-log', { useNewUrlParser: true, useCreateIndex: true }, (err) => {
+        await mongoose.connect('mongodb://localhost/lifting-log', { useNewUrlParser: true, useUnifiedTopology: true, useCreateIndex: true }, (err) => {
             if (err) {
                 console.error(err);
                 process.exit(1);
@@ -21,12 +22,13 @@ describe('Exercise Model Test', () => {
         expect(savedExercise.weight).toBe(exerciseData.weight);
         expect(savedExercise.sets).toBe(exerciseData.sets);
         expect(savedExercise.reps).toBe(exerciseData.reps);
+        expect(savedExercise.date).toBe(exerciseData.date);
     });
 
     // Test Schema is working!!!
     // You shouldn't be able to add in any field that isn't defined in the schema
     it('insert exercise successfully, but the field does not defined in schema should be undefined', async () => {
-        const exerciseWithInvalidField = new ExerciseModel({ name: 'Squat', weight: 165, sets: 5, reps: 10, goal: 200 });
+        const exerciseWithInvalidField = new ExerciseModel({ name: 'Squat', weight: 165, sets: 5, reps: 10, date: new Date('2020-04-01T00:00:00.000Z'), goal: 200 });
         const savedExerciseWithInvalidField = await exerciseWithInvalidField.save();
         expect(savedExerciseWithInvalidField._id).toBeDefined();
         expect(savedExerciseWithInvalidField.goal).toBeUndefined();
@@ -39,13 +41,14 @@ describe('Exercise Model Test', () => {
         let err;
         try {
             const savedExerciseWithoutRequiredField = await exerciseWithoutRequiredField.save();
-            error = savedExerciseWithoutRequiredField;
+            err = savedExerciseWithoutRequiredField;
         } catch (error) {
-            err = error
+            err = error;
         }
-        expect(err).toBeInstanceOf(mongoose.Error.ValidationError)
+        expect(err).toBeInstanceOf(mongoose.Error.ValidationError);
         expect(err.errors.weight).toBeDefined();
         expect(err.errors.reps).toBeDefined();
         expect(err.errors.sets).toBeDefined();
+        expect(err.errors.date).toBeDefined();
     });    
-})
+});
